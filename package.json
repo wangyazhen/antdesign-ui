@@ -7,6 +7,9 @@
     "type": "git",
     "url": "https://github.com/wangyazhen/antdesign-ui"
   },
+  "bugs": {
+    "url": "https://github.com/wangyazhen/antdesign-ui/issues"
+  },
   "scripts": {
     "build": "babel components -d lib",
     "prepublish": "npm run build",
@@ -19,6 +22,7 @@
     "ui",
     "component"
   ],
+  "homepage": "https://github.com/wangyazhen/antdesign-ui",
   "author": "Drcus <wyzandwqm@gmail.com>",
   "license": "MIT",
   "peerDependencies": {
