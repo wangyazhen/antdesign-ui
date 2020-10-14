@@ -3,6 +3,10 @@
   "version": "0.0.2",
   "description": "基于 antdesign 扩展更便捷的组件",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wangyazhen/antdesign-ui"
+  },
   "scripts": {
     "build": "babel components -d lib",
     "prepublish": "npm run build",
@@ -10,12 +14,17 @@
   },
   "keywords": [
     "antd",
+    "ant-design",
     "react",
     "ui",
     "component"
   ],
   "author": "Drcus <wyzandwqm@gmail.com>",
   "license": "MIT",
+  "peerDependencies": {
+    "antd": "^3.21.4",
+    "lodash": "^4.17.20"
+  },
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",

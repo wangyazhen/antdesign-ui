@@ -3,7 +3,7 @@ import React from 'react'
 import { Select } from 'antd'
 const Option = Select.Option
 
-export default function BaseSelect({ onChange, ...props }) {
+export default function BaseSelect({ onChange=v=>v, ...props }) {
 
     const handleChange = (value) => {
         const { selects = [], valueIsObj, valueField, onChangeAfter = () => {} } = props
