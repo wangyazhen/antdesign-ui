@@ -1,0 +1,16 @@
+*.iml
+.idea/
+*.bak
+.project
+.DS_Store
+Thumbs.db
+*.log
+*.log.*
+node_modules/
+npm-debug.log
+nohup.out
+dist/
+lib/
+yarn.lock
+package-lock.json
+.history
