@@ -46,5 +46,28 @@ export default TestComponent
 
 ```
 
+### SearchSelect
+
+基于 `BaseSelect` 的扩展，内部集成了默认的请求处理。
+
+参数 | 是否必填 | 说明 
+| ------------- |:-------------:| ----- | 
+| resource |  是  | 请求的 URL |
+| focusLoad |  否  | 获取焦点时发起请求 |
+| initialLoad |  否  | 组件加载完请求 |
+| initValue   |  否  | 是对象，用与默认初始显示 |
+| queryField   |  是  | 输入内容搜索时传给后台的参数 |
+
+
+```jsx
+<SearchSelect
+  initialLoad
+  resource={'/api/units'}
+  style={{width: 200}}
+  queryField="unit"
+  valueIsObj
+/>
+```
+
 
 后续会陆续的出新的组件。
