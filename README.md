@@ -61,10 +61,13 @@ export default TestComponent
 
 ```jsx
 <SearchSelect
-  initialLoad
-  resource={'/api/units'}
   style={{width: 200}}
-  queryField="unit"
+  initialLoad
+  onChangeAfter={v => console.log('改变之后-', v)}
+  onChange={v => console.log('改变-', v)}
+  resource={'/api/packageUnits'}
+  queryField="code"
+  displayField="name"
   valueIsObj
 />
 ```
