@@ -72,5 +72,10 @@ export default TestComponent
 />
 ```
 
+### EditableTable
+
+可编辑表格， 双击修改
+
+
 
 后续会陆续的出新的组件。
