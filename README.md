@@ -74,8 +74,11 @@ export default TestComponent
 
 ### EditableTable
 
-可编辑表格， 双击修改
+可编辑表格， 双击修改 -- todo
 
+### VirtualTable
+
+可展示大量数据的表格
 
 
 后续会陆续的出新的组件。
