@@ -1,5 +1,5 @@
-import { Resizable } from "react-resizable"
 import React, { useState } from "react"
+import { Resizable } from "react-resizable"
 import ReactList from "../react-list"
 
 const noop = () => {}
@@ -61,7 +61,7 @@ function WVTable({ columns, height, dataSource, onSelectChange = noop, hasSelect
 
             <div className="w-v-tbody">
                 <ReactList
-                    dataSource={data}
+                    dataSource={dataSource}
                     height={height}
                     minRowHeight={24}
                     rowRender={(index, style) => {
