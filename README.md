@@ -8,13 +8,13 @@
 
 ## 文档
 
-[](https://github.com/wangyazhen/antdesign-ui)
+[中文文档](https://github.com/wangyazhen/antdesign-ui/blob/master/doc.md)
 
 ### VirtualTable
 
 可展示大量数据的高性能表格 --
 
-没有 table 标签 
+没有 table 标签的表格 
 
 ---
 后续会陆续的更新新的组件。
