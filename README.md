@@ -8,6 +8,13 @@ Some antd components have been extended, and there are also independent componen
 [中文文档](https://github.com/wangyazhen/antdesign-ui/blob/master/doc.md)
 
 
+## VirtualTable
+
+Features ：
+
+- column sort  
+- column resize  
+- large data performance
 
 
 > **Continuously update new components**

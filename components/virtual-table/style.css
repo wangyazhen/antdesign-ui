@@ -1,4 +1,4 @@
-
+.flex{display: flex}
 .w-v-table{font: 300 13px/15px helvetica, arial, verdana, sans-serif;border-top: 1px solid #ccc;border-left: 1px solid #ccc;}
 .w-v-item {width: 100%;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;border-bottom: 1px solid #ccc;}
 .w-v-title { border-right: 1px solid #ccc; height: 30px;color: #666;padding: 7px 10px; line-height: 15px; }
@@ -10,3 +10,5 @@
 .w-v-table .w-v-row.selected .col-item-selection{background-color: #c2ddf2}
 .w-v-table .w-v-thead .col-item-selection {padding-top: 8px;}
 .w-v-table .col-item-selection {width: 24px;text-align: center;padding-top: 5px;border-bottom: 1px solid #ccc;}
+.w-v-table .w-v-title-sort {background-color: #eff6fb}
+.w-v-table .col-item {overflow: hidden}
