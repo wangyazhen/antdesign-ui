@@ -5,6 +5,7 @@ Rewrite an extjs project with antd.
 Some antd components have been extended, and there are also independent components that do not depend on antd.
 
 
+[更新日志](https://github.com/wangyazhen/antdesign-ui/blob/master/log.md)
 [中文文档](https://github.com/wangyazhen/antdesign-ui/blob/master/doc.md)
 
 

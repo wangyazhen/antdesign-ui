@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect, useMemo, useRef } from "react"
 import { Resizable } from "react-resizable"
 import ReactList from "../react-list"
 
@@ -13,14 +13,24 @@ export const sorterNum = (key, sort) => (a, b) => sort === ASC ? a[key] - b[key]
 // 2020-03-30 日期排序
 export const sorterDate = (key, sort) => (a, b) => sort === ASC ? a[key].replace(/-/g, '') * 1 - b[key].replace(/-/g, '') * 1 : b[key].replace(/-/g, '') * 1 - a[key].replace(/-/g, '') * 1;
 // USD JPY 首字母排序
-export const sortByInitial = (key, sort) => (a, b) => sort === ASC ? _.get(a, key, '').charCodeAt(0) - _.get(b, key, '').charCodeAt(0) : _.get(b, key, '').charCodeAt(0) - _.get(a, key, '').charCodeAt(0);
+export const sortByInitial = (key, sort) => (a, b) => {
+  let v = o => o[key] || ''
+  if (sort === ASC) return v(a).charCodeAt(0) - v(b).charCodeAt(0)
+  return v(b).charCodeAt(0) - v(a).charCodeAt(0)
+}
 
 function WVTable({ columns, height, dataSource, onSelectChange = noop, onDbClick = noop, hasSelect = false }) {
+
 
     const [width, setWidth] = useState(_ => columns.reduce((prev, item) => {prev[item.dataKey] = (item.width || 100);return prev}, {}))
     const onResize = (key, {element, size, handle}) => {
         setWidth({...width, [key]: size.width })
     }
+
+    useEffect(() => {
+        setWidth(columns.reduce((prev, item) => {prev[item.dataKey] = (item.width || 100);return prev}, {}))
+    }, [columns.reduce((p,n)=>{  p+= n.dataKey; return p  }, '')])
+
 
     const [selected, setSelected] = useState(0)
     const clickRow = (row) => {
@@ -73,24 +83,29 @@ function WVTable({ columns, height, dataSource, onSelectChange = noop, onDbClick
 
     const tableWidth = _.values(width).reduce((p,n)=>p+n, 0)
 
+    const renderTitle = () => {
+        return columns.map(col => {
+          return (
+            <div key={col.dataKey} className="col-item" style={{width: width[col.dataKey]}}>
+              <Resizable width={width[col.dataKey]} height={30} onResize={(e, size) => onResize(col.dataKey, size)}>
+                <div className={`w-v-item w-v-title ${sortKey[col.dataKey] ? 'w-v-title-sort' : ''}`} onClick={e => handleSort(e,col.dataKey)}>
+                  {col.title}
+                  { sortKey[col.dataKey] === 'ASC' ? <img src={ASCIMG} /> : sortKey[col.dataKey] === 'DESC' ? <img src={DESCIMG} /> : null }
+                </div>
+              </Resizable>
+            </div>
+          )
+        })
+    }
+    const renderTableTitle = useMemo(() => renderTitle(), [width, sortKey])
+
     return <div style={{overflowX: 'scroll'}}>
         <div className="w-v-table" style={{width: tableWidth}}>
             <div className="w-v-thead flex">
                 {hasSelect && <div className="col-item-selection">
                     <input type="checkbox" checked={selectedAll} onChange={handleAllCheck} />
                 </div>}
-                {columns.map(col => {
-                    return (
-                        <div key={col.dataKey} className="col-item" style={{width: width[col.dataKey]}}>
-                            <Resizable width={width[col.dataKey]} height={30} onResize={(e, size) => onResize(col.dataKey, size)}>
-                                <div className={`w-v-item w-v-title ${sortKey[col.dataKey] ? 'w-v-title-sort' : ''}`} onClick={e => handleSort(e,col.dataKey)}>
-                                  {col.title}
-                                  { sortKey[col.dataKey] === 'ASC' ? <img src={ASCIMG} /> : sortKey[col.dataKey] === 'DESC' ? <img src={DESCIMG} /> : null }
-                                </div>
-                            </Resizable>
-                        </div>
-                    )
-                })}
+                {renderTableTitle}
             </div>
 
             <div className="w-v-tbody">
