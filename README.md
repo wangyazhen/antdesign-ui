@@ -19,9 +19,9 @@ VirtualTable :
 
 ## 📦 Install
 
-```npm i antdesign ```
+```npm i antdesign-ui ```
 
-```yarn add antdesign ```
+```yarn add antdesign-ui ```
 
 ## 🔨 Usage
 
