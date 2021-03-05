@@ -3,6 +3,12 @@
 
 
 
+## v0.1.2
+
+添加 rowClassName
+添加 selectedKeys 参数传入，设置选中项，通过 onSelectionChange 更改
+
+
 ## v0.1.1
 
 解决 columns 切换 宽度丢失问题

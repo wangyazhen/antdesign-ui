@@ -19,7 +19,14 @@ export const sortByInitial = (key, sort) => (a, b) => {
   return v(b).charCodeAt(0) - v(a).charCodeAt(0)
 }
 
-function WVTable({ columns, height, dataSource, onSelectChange = noop, onDbClick = noop, hasSelect = false }) {
+function WVTable(
+  {
+    columns, height, dataSource,
+    selectedKeys, onSelectChange = noop,
+    rowClassName = noop,
+    onDbClick = noop, hasSelect = false
+  }
+) {
 
 
     const [width, setWidth] = useState(_ => columns.reduce((prev, item) => {prev[item.dataKey] = (item.width || 100);return prev}, {}))
@@ -29,7 +36,7 @@ function WVTable({ columns, height, dataSource, onSelectChange = noop, onDbClick
 
     useEffect(() => {
         setWidth(columns.reduce((prev, item) => {prev[item.dataKey] = (item.width || 100);return prev}, {}))
-    }, [columns.reduce((p,n)=>{  p+= n.dataKey; return p  }, '')])
+    }, [columns.reduce((p,n)=>{  p+= n.dataIndex; return p  }, '')])
 
 
     const [selected, setSelected] = useState(0)
@@ -39,6 +46,10 @@ function WVTable({ columns, height, dataSource, onSelectChange = noop, onDbClick
 
     const [selectedAll, setSelectedAll] = useState(false)
     const [selectedRowKeys, setSelectedRowKeys] = useState([])
+
+    useEffect(() => {
+      setSelectedRowKeys(selectedKeys)
+    }, [selectedKeys.length])
 
 
      const [sortKey, setSortKey] = useState({})
@@ -83,21 +94,21 @@ function WVTable({ columns, height, dataSource, onSelectChange = noop, onDbClick
 
     const tableWidth = _.values(width).reduce((p,n)=>p+n, 0)
 
-    const renderTitle = () => {
-        return columns.map(col => {
-          return (
-            <div key={col.dataKey} className="col-item" style={{width: width[col.dataKey]}}>
-              <Resizable width={width[col.dataKey]} height={30} onResize={(e, size) => onResize(col.dataKey, size)}>
-                <div className={`w-v-item w-v-title ${sortKey[col.dataKey] ? 'w-v-title-sort' : ''}`} onClick={e => handleSort(e,col.dataKey)}>
-                  {col.title}
-                  { sortKey[col.dataKey] === 'ASC' ? <img src={ASCIMG} /> : sortKey[col.dataKey] === 'DESC' ? <img src={DESCIMG} /> : null }
-                </div>
-              </Resizable>
+  const renderTitle = () => {
+    return columns.map(col => {
+      return (
+        <div key={col.dataKey} className="col-item" style={{width: width[col.dataKey]}}>
+          <Resizable width={width[col.dataKey]} height={30} onResize={(e, size) => onResize(col.dataKey, size)}>
+            <div className={`w-v-item w-v-title ${sortKey[col.dataKey] ? 'w-v-title-sort' : ''}`} onClick={e => handleSort(e,col.dataKey)}>
+              {col.title}
+              { sortKey[col.dataKey] === 'ASC' ? <img src={ASCIMG} /> : sortKey[col.dataKey] === 'DESC' ? <img src={DESCIMG} /> : null }
             </div>
-          )
-        })
-    }
-    const renderTableTitle = useMemo(() => renderTitle(), [width, sortKey])
+          </Resizable>
+        </div>
+      )
+    })
+  }
+  const renderTableTitle = useMemo(() => renderTitle(), [width, sortKey])
 
     return <div style={{overflowX: 'scroll'}}>
         <div className="w-v-table" style={{width: tableWidth}}>
@@ -118,9 +129,10 @@ function WVTable({ columns, height, dataSource, onSelectChange = noop, onDbClick
                     rowRender={(index, style) => {
                       const item = dataSource[index]
                       const checked = selectedRowKeys.includes(item.id)
-                      const rowClassName = () => {
-                        let clsName = "w-v-row flex"
-                        let selectedClsName = "w-v-row flex selected"
+                      const _rowClassName = () => {
+                        const extraCls = rowClassName(item) || ''
+                        let clsName = "w-v-row flex " + extraCls
+                        let selectedClsName = "w-v-row flex selected " + extraCls
                         if (hasSelect) {
                           return checked ? selectedClsName : clsName
                         }
@@ -128,7 +140,7 @@ function WVTable({ columns, height, dataSource, onSelectChange = noop, onDbClick
                       }
 
                       return (
-                        <div className={rowClassName()} onClick={_ => clickRow(item)} onDoubleClick={_ => onDbClick(item)}>
+                        <div className={_rowClassName()} onClick={_ => clickRow(item)} onDoubleClick={_ => onDbClick(item)}>
                           {hasSelect && <div className="col-item-selection">
                             <input type="checkbox" checked={checked} onChange={v => handleCheck(v, item.id)} />
                           </div>}

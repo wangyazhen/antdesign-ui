@@ -8,14 +8,44 @@ Some antd components have been extended, and there are also independent componen
 [更新日志](https://github.com/wangyazhen/antdesign-ui/blob/master/log.md)
 [中文文档](https://github.com/wangyazhen/antdesign-ui/blob/master/doc.md)
 
+## ✨ Features
 
-## VirtualTable
-
-Features ：
+VirtualTable :
 
 - column sort  
 - column resize  
 - large data performance
+
+
+## 📦 Install
+
+```npm i antdesign ```
+
+```yarn add antdesign ```
+
+## 🔨 Usage
+
+```jsx
+import { VirtualTable } from 'antdesign-ui';
+
+const App = () => (
+  <>
+    <VirtualTable
+        height={200}
+        dataSource={dataSource}
+        columns={columns}
+      />
+  </>
+);
+```
+
+And import style manually:
+
+```html
+import "antdesign-ui/lib/virtual-table/style.css"
+```
+
+
 
 
 > **Continuously update new components**
