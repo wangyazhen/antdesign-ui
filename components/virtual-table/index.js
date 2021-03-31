@@ -14,18 +14,39 @@ export const sorterNum = (key, sort) => (a, b) => sort === ASC ? a[key] - b[key]
 export const sorterDate = (key, sort) => (a, b) => sort === ASC ? a[key].replace(/-/g, '') * 1 - b[key].replace(/-/g, '') * 1 : b[key].replace(/-/g, '') * 1 - a[key].replace(/-/g, '') * 1;
 // USD JPY 首字母排序
 export const sortByInitial = (key, sort) => (a, b) => {
-  let v = o => o[key] || ''
-  if (sort === ASC) return v(a).charCodeAt(0) - v(b).charCodeAt(0)
-  return v(b).charCodeAt(0) - v(a).charCodeAt(0)
+    try {
+        let v = o => o[key] || ''
+        if (sort === ASC) return v(a).charCodeAt(0) - v(b).charCodeAt(0)
+        return v(b).charCodeAt(0) - v(a).charCodeAt(0)
+    } catch (e) {
+        console.log('sortByInitial exception:', a[key], e.message)
+    }
+}
+// 可排序 TX123 ｜ abc 等
+export const sortByLocal = (key, sort) => (a, b) => {
+    try {
+        let v = o => getValue(o, key, '')
+        if (sort === ASC) return v(a).localeCompare(v(b))
+        return v(b).localeCompare(v(a))
+    } catch (e) {
+        console.log('sortByLocal exception:', a[key], e.message)
+    }
 }
 
+// 让dataKey支持 obj.name
+const getValue = (obj, keys, defaultVal) => keys.split(/\./).reduce((o, j)=>((o || {})[j]),obj) || defaultVal;
+
 function WVTable(
-  {
-    columns, height, dataSource,
-    selectedKeys, onSelectChange = noop,
-    rowClassName = noop,
-    onDbClick = noop, hasSelect = false
-  }
+    {
+        columns, height, dataSource,
+        selectedKeys = [],
+        onSelectChange = noop,
+        rowClassName = noop,
+        onClickRow = noop,
+        onDbClick = noop,
+        hasSelect = false,
+        loading, // 加载中组件
+    }
 ) {
 
 
@@ -42,32 +63,35 @@ function WVTable(
     const [selected, setSelected] = useState(0)
     const clickRow = (row) => {
         if (!hasSelect) setSelected(row.id)
+        onClickRow(row)
     }
 
     const [selectedAll, setSelectedAll] = useState(false)
     const [selectedRowKeys, setSelectedRowKeys] = useState([])
 
     useEffect(() => {
-      setSelectedRowKeys(selectedKeys)
-    }, [selectedKeys.length])
+        if (selectedKeys.length) {
+            setSelectedRowKeys(selectedKeys)
+        }
+    }, [selectedKeys])
 
 
-     const [sortKey, setSortKey] = useState({})
-     const handleSort = (event, key) => {
-       if (event.target.nodeName === 'SPAN') return false
+    const [sortKey, setSortKey] = useState({})
+    const handleSort = (event, key) => {
+        if (event.target.nodeName === 'SPAN') return false
         const sort = sortKey[key] === ASC ? DESC : ASC
-       setSortKey({ [key]: sort })
-       const item = dataSource[0]
-       if (dataSource && item) {
-         if ((/^\d+$/).test(item[key])) {
-           dataSource.sort(sorterNum(key, sort))
-         } else if ((/(\d{4})\-(\d{2})-(\d{2})/).test(item[key])) {
-           dataSource.sort(sorterDate(key, sort))
-         } else {
-           dataSource.sort(sortByInitial(key, sort))
-         }
-       }
-     }
+        setSortKey({ [key]: sort })
+        const item = dataSource[0]
+        if (dataSource && item) {
+            if ((/^\d+$/).test(item[key]) || typeof item[key] === "boolean") {
+                dataSource.sort(sorterNum(key, sort))
+            } else if ((/(\d{4})\-(\d{2})-(\d{2})/).test(item[key])) {
+                dataSource.sort(sorterDate(key, sort))
+            } else {
+                dataSource.sort(sortByLocal(key, sort))
+            }
+        }
+    }
 
 
     const handleAllCheck = (event) => {
@@ -94,21 +118,24 @@ function WVTable(
 
     const tableWidth = _.values(width).reduce((p,n)=>p+n, 0)
 
-  const renderTitle = () => {
-    return columns.map(col => {
-      return (
-        <div key={col.dataKey} className="col-item" style={{width: width[col.dataKey]}}>
-          <Resizable width={width[col.dataKey]} height={30} onResize={(e, size) => onResize(col.dataKey, size)}>
-            <div className={`w-v-item w-v-title ${sortKey[col.dataKey] ? 'w-v-title-sort' : ''}`} onClick={e => handleSort(e,col.dataKey)}>
-              {col.title}
-              { sortKey[col.dataKey] === 'ASC' ? <img src={ASCIMG} /> : sortKey[col.dataKey] === 'DESC' ? <img src={DESCIMG} /> : null }
-            </div>
-          </Resizable>
-        </div>
-      )
-    })
-  }
-  const renderTableTitle = useMemo(() => renderTitle(), [width, sortKey])
+    const renderTitle = () => {
+        return columns.map(col => {
+            return (
+                <div key={col.dataKey} className="col-item" style={{width: width[col.dataKey]}}>
+                    <Resizable width={width[col.dataKey]} height={30} onResize={(e, size) => onResize(col.dataKey, size)}>
+                        <div className={`w-v-item w-v-title ${sortKey[col.dataKey] ? 'w-v-title-sort' : ''}`} onClick={e => handleSort(e,col.dataKey)}>
+                            {col.title}
+                            { sortKey[col.dataKey] === 'ASC' ? <img src={ASCIMG} /> : sortKey[col.dataKey] === 'DESC' ? <img src={DESCIMG} /> : null }
+                        </div>
+                    </Resizable>
+                </div>
+            )
+        })
+    }
+    const renderTableTitle = useMemo(() => renderTitle(), [width, sortKey])
+
+    // loading 距离左边的百分比
+    let percentL = document.getElementById('container').offsetWidth / tableWidth / 2 * 100
 
     return <div style={{overflowX: 'scroll'}}>
         <div className="w-v-table" style={{width: tableWidth}}>
@@ -120,41 +147,43 @@ function WVTable(
             </div>
 
             <div className="w-v-tbody">
-              {
-                dataSource.length ?
-                  <ReactList
-                    dataSource={dataSource}
-                    height={height}
-                    minRowHeight={24}
-                    rowRender={(index, style) => {
-                      const item = dataSource[index]
-                      const checked = selectedRowKeys.includes(item.id)
-                      const _rowClassName = () => {
-                        const extraCls = rowClassName(item) || ''
-                        let clsName = "w-v-row flex " + extraCls
-                        let selectedClsName = "w-v-row flex selected " + extraCls
-                        if (hasSelect) {
-                          return checked ? selectedClsName : clsName
-                        }
-                        return selected === item.id ? selectedClsName : clsName
-                      }
+                {
+                    dataSource.length && !loading ?
+                        <ReactList
+                            dataSource={dataSource}
+                            height={height}
+                            minRowHeight={24}
+                            rowRender={(index, style) => {
+                                const item = dataSource[index]
+                                const checked = selectedRowKeys.includes(item.id)
+                                const _rowClassName = () => {
+                                    const extraCls = rowClassName(item) || ''
+                                    let clsName = "w-v-row flex " + extraCls
+                                    let selectedClsName = "w-v-row flex selected " + extraCls
+                                    if (hasSelect) {
+                                        return checked ? selectedClsName : clsName
+                                    }
+                                    return selected === item.id ? selectedClsName : clsName
+                                }
 
-                      return (
-                        <div className={_rowClassName()} onClick={_ => clickRow(item)} onDoubleClick={_ => onDbClick(item)}>
-                          {hasSelect && <div className="col-item-selection">
-                            <input type="checkbox" checked={checked} onChange={v => handleCheck(v, item.id)} />
-                          </div>}
-                          {columns.map(col => (
-                            <div key={col.dataKey} className="col-item" style={{width: width[col.dataKey]}}>
-                              <div className="w-v-item w-v-body-cell">{col.render ? col.render(item[col.dataKey], item) : item[col.dataKey]}</div>
-                            </div>
-                          ))}
-                        </div>
-                      )
-                    }}
-                  /> :
-                  <div style={{height}} />
-              }
+                                return (
+                                    <div className={_rowClassName()} onClick={_ => clickRow(item)} onDoubleClick={_ => onDbClick(item)}>
+                                        {hasSelect && <div className="col-item-selection">
+                                            <input type="checkbox" checked={checked} onChange={v => handleCheck(v, item.id)} />
+                                        </div>}
+                                        {columns.map(col => (
+                                            <div key={col.dataKey} className="col-item" style={{width: width[col.dataKey]}}>
+                                                <div className="w-v-item w-v-body-cell">{
+                                                    col.render ? col.render(item[col.dataKey], item) : getValue(item, col.dataKey, '')
+                                                }</div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )
+                            }}
+                        /> :
+                        <div style={{height, marginLeft: `${percentL}%`, paddingTop: height/2-50}}>{loading}</div>
+                }
             </div>
 
         </div>
