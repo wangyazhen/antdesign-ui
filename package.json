@@ -11,8 +11,8 @@
     "url": "https://github.com/wangyazhen/antdesign-ui/issues"
   },
   "scripts": {
-    "build": "babel components -d lib --copy-files",
-    "prepublish": "npm run build",
+    "prepublishOnly": "npm run build",
+    "build": "babel components --out-dir lib --extensions '.ts,.tsx'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -23,25 +23,30 @@
     "react-component",
     "extJs",
     "virtual-table",
-    "component"
+    "components"
   ],
   "homepage": "https://github.com/wangyazhen/antdesign-ui",
   "author": "Drcus <wyzandwqm@gmail.com>",
   "license": "MIT",
   "peerDependencies": {
+    "antd": "^4.15.0",
     "axios": "^0.18.0",
     "lodash": "^4.17.20"
   },
   "dependencies": {
+    "@types/react": "^17.0.2",
+    "@types/react-dom": "^17.0.2",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "react-resizable": "^1.11.0",
     "prop-types": "^15.7.2"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.3",
-    "babel-preset-es2015": "^6.24.1",
-    "babel-preset-es2017": "^6.24.1",
-    "babel-preset-react": "^6.24.1",
-    "babel-preset-stage-0": "^6.24.1"
+    "@babel/cli": "7.13.14",
+    "@babel/core": "7.13.14",
+    "@babel/plugin-proposal-class-properties": "^7.13.0",
+    "@babel/preset-env": "7.13.12",
+    "@babel/preset-react": "7.13.13",
+    "@babel/preset-typescript": "^7.13.0"
   }
 }

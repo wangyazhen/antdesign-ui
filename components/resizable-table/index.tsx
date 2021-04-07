@@ -1,8 +1,10 @@
 import React from 'react'
+// @ts-ignore
+import type { ColumnGroupType } from 'antd'
 import { Table } from 'antd'
 import { Resizable } from 'react-resizable'
 
-const ResizeableTitle = (props) => {
+const ResizeableTitle = (props: any) => {
   const { onResize, onResizeStop, onResizeStart, width, ...restProps } = props;
 
   if (!width) {
@@ -23,11 +25,11 @@ const ResizeableTitle = (props) => {
 
 
 class ResizableTable extends React.Component {
-  constructor(props) {
+  constructor(props: any) {
     super(props);
     this.state = {
       isResizing: false,
-      columns: props.columns,
+      columns: props.columns as ColumnGroupType,
     }
   }
 
@@ -38,7 +40,9 @@ class ResizableTable extends React.Component {
   }
 
 
-  handleResize = index => (e, { size }) => {
+  // @ts-ignore
+  handleResize = (index: number) => (e: any, { size }) => {
+    // @ts-ignore
     this.setState(({ columns }) => {
       const nextColumns = [...columns]
       nextColumns[index] = {
@@ -49,28 +53,16 @@ class ResizableTable extends React.Component {
     })
   }
 
-  onResizeStart = (e, data) => {
-    this.setState(({isResizing})=> {
-      return {isResizing:true}
-    })
-
-  }
-
-  onResizeStop = (e, data) => {
-    this.setState(({ isResizing }) => {
-      return { isResizing: false }
-    })
-  }
 
   render() {
+    // @ts-ignore
     const {columns, ...resetProps} = this.props
+    // @ts-ignore
     const columnsNew = this.state.columns.map((col, index) => ({
       ...col,
-      onHeaderCell: (column) => ({
+      onHeaderCell: (column: { width: any }) => ({
         width: column.width,
         onResize: this.handleResize(index),
-        onResizeStart: this.onResizeStart,
-        onResizeStop: this.onResizeStop
       }),
     }))
 
