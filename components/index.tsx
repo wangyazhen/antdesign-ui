@@ -15,4 +15,6 @@ export { default as EditableTable } from "./editable-table";
 
 export { default as ResizableTable } from "./resizable-table";
 
+export { default as VirtualSelect } from "./virtual-select";
+
 export { default as VirtualTable } from "./virtual-table";
