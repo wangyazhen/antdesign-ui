@@ -2,7 +2,7 @@
   "name": "antdesign-ui",
   "version": "0.1.2",
   "description": "基于 antdesign 扩展更便捷的组件, 也有无任何依赖的组件",
-  "main": "index.js",
+  "main": "lib/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/wangyazhen/antdesign-ui"
@@ -12,7 +12,7 @@
   },
   "scripts": {
     "prepublishOnly": "npm run build",
-    "build": "babel components --out-dir lib --extensions '.ts,.tsx'",
+    "build": "babel components -d lib --copy-files --extensions .ts,.js,.tsx,.jsx",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [

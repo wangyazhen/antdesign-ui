@@ -9,6 +9,25 @@
 .w-v-table .w-v-row.selected .w-v-body-cell,
 .w-v-table .w-v-row.selected .col-item-selection{background-color: #c2ddf2}
 .w-v-table .w-v-thead .col-item-selection {padding-top: 8px;}
+.w-v-table .w-v-thead .col-item-operation {position: sticky;width:10px;right:10px;top:3px;}
+.w-v-table .w-v-thead .col-item-operation button {margin-left: -10px;}
 .w-v-table .col-item-selection {width: 24px;text-align: center;padding-top: 5px;border-bottom: 1px solid #ccc;}
 .w-v-table .w-v-title-sort {background-color: #eff6fb}
 .w-v-table .col-item {overflow: hidden}
+.w-v-row .w-v-body-cell.editing-cell {height: 30px;padding: 2px 3px 1px}
+.editing-row {position:relative;background-color: #e0ebf3;}
+.w-v-row.editing-row .w-v-body-cell{line-height: 25px;}
+
+/* 右侧展开 */
+.dragIcon {
+  width: 6px;
+  height: 10px;
+  margin: 0 7px 0 0;
+  display: inline-block;
+  background: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIiIGhlaWdodD0iMTIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTQgOWExIDEgMCAxMTAgMiAxIDEgMCAwMTAtMnptNCAwYTEgMSAwIDExMCAyIDEgMSAwIDAxMC0yek00IDVhMSAxIDAgMTEwIDIgMSAxIDAgMDEwLTJ6bTQgMGExIDEgMCAxMTAgMiAxIDEgMCAwMTAtMnpNNCAxYTEgMSAwIDExMCAyIDEgMSAwIDAxMC0yem00IDBhMSAxIDAgMTEwIDIgMSAxIDAgMDEwLTJ6IiBmaWxsPSIjODU5MkE2IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48L3N2Zz4=) no-repeat 50%;
+}
+
+.dragItem.dragging,
+.dragItem:hover {
+  background: #f2f4f6;
+}
