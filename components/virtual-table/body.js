@@ -1,6 +1,6 @@
 import ReactList from "../react-list";
-import { TextButton } from "@components/ui/Button";
-import React, { useState, useEffect } from "react";
+import { TextButton } from "../Button";
+import React, { useState } from "react";
 import { noop, getValue, DEFAULTWIDTH } from "./util";
 
 const _editBtnStyle = {
