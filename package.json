@@ -1,6 +1,6 @@
 {
   "name": "antdesign-ui",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "基于 antdesign 扩展更便捷的组件, 也有无依赖的组件。 基于替换ExtJs系统。 现代的EPR系统。 虚拟列表",
   "main": "lib/index.js",
   "repository": {
@@ -31,6 +31,7 @@
   "peerDependencies": {
     "antd": "^4.15.0",
     "axios": "^0.18.0",
+    "moment": "^2.10.3",
     "lodash": "^4.17.20"
   },
   "dependencies": {

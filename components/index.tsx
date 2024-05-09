@@ -2,7 +2,7 @@
  * @Author: 王亚振
  * @Date: 2020-10-13 14:59:23
  * @LastEditors: 王亚振
- * @LastEditTime: 2024-05-08 10:53:50
+ * @LastEditTime: 2024-05-09 15:12:47
  * @FilePath: /antdesign-ui/components/index.tsx
  */
 export { default as BaseSelect } from "./base-select";

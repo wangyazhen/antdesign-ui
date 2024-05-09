@@ -4,8 +4,8 @@ import { Button, Icon } from "antd"
 import TableDrawer from "./TableDrawer"
 import TableBody from "./body"
 import { ASCIMG, ASC, DESCIMG, DESC, DEFAULTWIDTH, sortByLocal, noop } from "./util"
-import { sorterDate, sorterNum,  } from "@/utils/helper"
-import { usePrevious } from '@umijs/hooks'
+import { sorterDate, sorterNum, } from "../utils/helper"
+import usePrevious from '../hooks/usePrevious'
 
 /*
 *  optimize
@@ -18,7 +18,7 @@ function WVTable(props, ref) {
     columns: propsColumns,
     dataSource: propsDataSource,
     selectedKeys,
-    onSelectChange = (selectedRowKeys, selectedRow) => {},
+    onSelectChange = (selectedRowKeys, selectedRow) => { },
     // sortKeys,
     // onSortChange = (sortKey) => {},
     rowClassName = noop,
@@ -41,13 +41,13 @@ function WVTable(props, ref) {
   const [selectedAll, setSelectedAll] = useState(false)
   const [selectedRowKeys, setSelectedRowKeys] = useState([])
 
-  const [width, setWidth] = useState(_ => columns.reduce((prev, item) => {prev[item.dataKey] = (item.width || 100);return prev}, {}))
-  const onResize = (key, {element, size, handle}) => {
-      setWidth({...width, [key]: size.width })
+  const [width, setWidth] = useState(_ => columns.reduce((prev, item) => { prev[item.dataKey] = (item.width || 100); return prev }, {}))
+  const onResize = (key, { element, size, handle }) => {
+    setWidth({ ...width, [key]: size.width })
   }
 
   const updateWidth = (columns) => {
-    setWidth(columns.reduce((prev, item) => {prev[item.dataKey] = (item.width || 100);return prev}, {}))
+    setWidth(columns.reduce((prev, item) => { prev[item.dataKey] = (item.width || 100); return prev }, {}))
   };
 
 
@@ -136,19 +136,19 @@ function WVTable(props, ref) {
     }
   }
   const handleSort = (event, key, col) => {
-     if (event.target.nodeName === 'SPAN') return false;
-     const sort = sortKey[key] === ASC ? DESC : ASC;
-     sortDataSource(sort, key, col.sortType)
-     setSortKey({ [key]: sort })
-     // onSortChange({ [key]: sort })
+    if (event.target.nodeName === 'SPAN') return false;
+    const sort = sortKey[key] === ASC ? DESC : ASC;
+    sortDataSource(sort, key, col.sortType)
+    setSortKey({ [key]: sort })
+    // onSortChange({ [key]: sort })
   }
 
   const handleAllCheck = (event) => {
-      const keys = event.target.checked ? dataSource.map(v => v.id) : []
-      const rows = event.target.checked ? dataSource : []
-      setSelectedAll(event.target.checked)
-      setSelectedRowKeys(keys)
-      onSelectChange(keys, rows)
+    const keys = event.target.checked ? dataSource.map(v => v.id) : []
+    const rows = event.target.checked ? dataSource : []
+    setSelectedAll(event.target.checked)
+    setSelectedRowKeys(keys)
+    onSelectChange(keys, rows)
   }
 
 
@@ -156,14 +156,14 @@ function WVTable(props, ref) {
   const renderTitle = () => {
     return columns.map(col => {
       return (
-        <div key={col.dataKey} className="col-item" style={{width: width[col.dataKey]}}>
-          <Resizable width={width[col.dataKey] || DEFAULTWIDTH} height={30} minConstraints={[55,55]} maxConstraints={[800,800]} onResize={(e, size) => onResize(col.dataKey, size)}>
+        <div key={col.dataKey} className="col-item" style={{ width: width[col.dataKey] }}>
+          <Resizable width={width[col.dataKey] || DEFAULTWIDTH} height={30} minConstraints={[55, 55]} maxConstraints={[800, 800]} onResize={(e, size) => onResize(col.dataKey, size)}>
             <div
               className={`w-v-item w-v-title ${sortKey[col.dataKey] ? 'w-v-title-sort' : ''}`}
-              onClick={e => handleSort(e,col.dataKey, col)}
+              onClick={e => handleSort(e, col.dataKey, col)}
             >
               {col.title}
-              { sortKey[col.dataKey] === 'ASC' ? <img src={ASCIMG} /> : sortKey[col.dataKey] === 'DESC' ? <img src={DESCIMG} /> : null }
+              {sortKey[col.dataKey] === 'ASC' ? <img src={ASCIMG} /> : sortKey[col.dataKey] === 'DESC' ? <img src={DESCIMG} /> : null}
             </div>
           </Resizable>
         </div>
@@ -174,7 +174,7 @@ function WVTable(props, ref) {
 
 
 
-  const tableWidth = _.values(width).reduce((p,n)=>p+n, 0);
+  const tableWidth = _.values(width).reduce((p, n) => p + n, 0);
   const bodyProps = {
     ...props,
     width,
