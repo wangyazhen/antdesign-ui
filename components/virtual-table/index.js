@@ -19,6 +19,7 @@ function WVTable(props, ref) {
     dataSource: propsDataSource,
     selectedKeys,
     onSelectChange = (selectedRowKeys, selectedRow) => { },
+    onResizeChange = (resizedColumn, resizedColumnMap) => { },
     // sortKeys,
     // onSortChange = (sortKey) => {},
     rowClassName = noop,
@@ -29,6 +30,8 @@ function WVTable(props, ref) {
     // 单选模式
     singleMode = false,
     hasSelect = false,
+    // 自定义 table drawer时设 false
+    drawerSetting = true, // 默认启用设置按钮
   } = props;
 
   const tableRef = useRef(null)
@@ -43,7 +46,9 @@ function WVTable(props, ref) {
 
   const [width, setWidth] = useState(_ => columns.reduce((prev, item) => { prev[item.dataKey] = (item.width || 100); return prev }, {}))
   const onResize = (key, { element, size, handle }) => {
-    setWidth({ ...width, [key]: size.width })
+    const newWidth = { ...width, [key]: size.width }
+    setWidth(newWidth)
+    onResizeChange({ [key]: size.width }, newWidth)
   }
 
   const updateWidth = (columns) => {
@@ -61,6 +66,9 @@ function WVTable(props, ref) {
     },
     onlyUpdateColumns: (cols) => {
       setColumns(cols);
+    },
+    getColumns: () => {
+      return columns;
     },
     updateDataSource: (data) => {
       setDataSource(data);
@@ -100,17 +108,9 @@ function WVTable(props, ref) {
     }
   }, [selectedKeys])
 
-  // useEffect(() => {
-  //   console.log('dit set sort key', sortKeys, sortKey)
-  //   if (sortKeys !== sortKey) {
-  //     console.log('set sort key')
-  //     setSortKey(sortKeys)
-  //   }
-  // }, [sortKeys])
 
 
   const sortDataSource = (sort, key, sortType, originData) => {
-    //const sort = sortKey[key] === ASC ? DESC : ASC;
 
     const item = originData ? originData[0] : dataSource[0];
     const sortArray = originData ? [...originData] : [...dataSource];
@@ -152,6 +152,18 @@ function WVTable(props, ref) {
   }
 
 
+  const colTitleClassName = col => {
+    let cls = 'w-v-item w-v-title'
+    if (sortKey[col.dataKey]) {
+      cls += ' w-v-title-sort '
+    }
+    // 标题 默认启用
+    // if (col.ellipsis !== false) {
+    // }
+    cls += ' ellipsis '
+
+    return cls
+  }
 
   const renderTitle = () => {
     return columns.map(col => {
@@ -159,7 +171,7 @@ function WVTable(props, ref) {
         <div key={col.dataKey} className="col-item" style={{ width: width[col.dataKey] }}>
           <Resizable width={width[col.dataKey] || DEFAULTWIDTH} height={30} minConstraints={[55, 55]} maxConstraints={[800, 800]} onResize={(e, size) => onResize(col.dataKey, size)}>
             <div
-              className={`w-v-item w-v-title ${sortKey[col.dataKey] ? 'w-v-title-sort' : ''}`}
+              className={colTitleClassName(col)}
               onClick={e => handleSort(e, col.dataKey, col)}
             >
               {col.title}
@@ -200,11 +212,13 @@ function WVTable(props, ref) {
             </div>
           )}
           {renderTableTitle}
-          <div className="col-item-operation">
-            <Button type="primary" size="small" onClick={() => setShowDrawer(true)}>
-              <Icon type="setting" />
-            </Button>
-          </div>
+          {drawerSetting &&
+            <div className="col-item-operation">
+              <Button type="primary" size="small" onClick={() => setShowDrawer(true)}>
+                <Icon type="setting" />
+              </Button>
+            </div>
+          }
         </div>
 
         <TableBody {...bodyProps} />

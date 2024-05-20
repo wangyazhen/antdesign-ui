@@ -1,3 +1,11 @@
+<!--
+ * @Author: 王亚振
+ * @Date: 2020-10-13 16:05:27
+ * @LastEditors: 王亚振
+ * @LastEditTime: 2024-05-20 17:41:15
+ * @FilePath: /antdesign-ui/README.md
+-->
+
 # antdesign-ui
 
 Rewrite an extjs project with antd.
@@ -13,6 +21,8 @@ VirtualTable :
 
 - column sort
 - column resize
+- column ellipsis // default is true
+- column resize callback
 - large data performance
 
 VirtualSelect
@@ -27,6 +37,14 @@ like extjs style button
 
 - usePrevious
 - useUpdateEffect
+- useDebounce
+- useScrollbarWidth
+
+use
+
+```
+import { useDebounce } from 'antdesign-ui/lib/hooks'
+```
 
 ## 📦 Install
 

@@ -133,3 +133,26 @@ function sortCode(a, b) {
   return 0;
 }
 /* end sort by wyz */
+
+//** doms /
+export function getScrollbarWidth() {
+  // 创建一个 div 元素并设置样式
+  const outer = document.createElement('div');
+  outer.style.visibility = 'hidden';
+  outer.style.width = '100px';
+  outer.style.msOverflowStyle = 'scrollbar'; // 使 IE 浏览器显示滚动条
+  document.body.appendChild(outer);
+
+  // 计算滚动条宽度
+  const widthNoScroll = outer.offsetWidth;
+  outer.style.overflow = 'scroll';
+  const inner = document.createElement('div');
+  inner.style.width = '100%';
+  outer.appendChild(inner);
+  const widthWithScroll = inner.offsetWidth;
+  outer.parentNode.removeChild(outer);
+
+  // 返回滚动条宽度
+  return widthNoScroll - widthWithScroll;
+}
+

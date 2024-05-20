@@ -1,6 +1,7 @@
 .flex{display: flex}
 .w-v-table{font: 300 13px/15px helvetica, arial, verdana, sans-serif;border-top: 1px solid #ccc;border-left: 1px solid #ccc;}
-.w-v-item {width: 100%;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;border-bottom: 1px solid #ccc;}
+.w-v-item {width: 100%;overflow: hidden;border-bottom: 1px solid #ccc;}
+.w-v-item.ellipsis {text-overflow: ellipsis;white-space: nowrap;}
 .w-v-title { border-right: 1px solid #ccc; height: 30px;color: #666;padding: 7px 10px; line-height: 15px; }
 .w-v-row .w-v-body-cell { padding: 5px 10px 4px; height: 24px; color: #000;font-weight: 300;line-height: 15px; }
 .w-v-table .w-v-thead .w-v-title:hover{background: #eff6fb}

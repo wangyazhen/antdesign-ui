@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Computer from './computer';
 import Row from './row';
+import { getScrollbarWidth } from '../utils/helper';
 
 export default class AnyHeight extends Component {
     constructor(props) {
@@ -88,10 +89,19 @@ export default class AnyHeight extends Component {
     render() {
         const { minRowHeight, height, style, rowStyle, rowRender } = this.props;
         const { beginIndex, endIndex, beforeHeight, afterHeight } = this.state;
+
         const wapperStyle = Object.assign({}, style, {
             height: `${height}px`,
             overflowY: 'scroll',
         });
+        try {
+            const scrollbarW = getScrollbarWidth();
+            if (scrollbarW > 0) {
+                wapperStyle.width = `calc(100% + ${scrollbarW}px)`;
+            }
+        } catch (error) {
+            console.warn(error)
+        }
 
         const rowWapperStyle = Object.assign({}, rowStyle, {
             minHeight: `${minRowHeight}px`,

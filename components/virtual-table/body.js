@@ -95,8 +95,32 @@ const Body = props => {
     }, 300);
   }
 
+
+  const cellClassName = (col, item) => {
+    let cls = 'w-v-item w-v-body-cell'
+    if (isEditing(item.id)) {
+      cls += ' editing-cell '
+    }
+    // 默认启用
+    if (col.ellipsis !== false) {
+      cls += ' ellipsis '
+    }
+
+    return cls
+  }
+
   // loading 距离左边的百分比
-  let percentL = (document.getElementById("container").offsetWidth / tableWidth / 2) * 100;
+  let percentL = 0.4;
+  try {
+    percentL = (document.getElementById("container").offsetWidth / tableWidth / 2) * 100;
+  } catch (error) {
+    console.log(error)
+  }
+  try {
+    percentL = (document.getElementsByTagName('body')[0].offsetWidth / tableWidth / 2) * 100;
+  } catch (error) {
+    console.log(error)
+  }
 
   return (
     <div className="w-v-tbody" style={{ position: 'relative' }}>
@@ -136,13 +160,7 @@ const Body = props => {
                     className="col-item"
                     style={{ width: width[col.dataKey] || DEFAULTWIDTH }}
                   >
-                    <div
-                      className={
-                        isEditing(item.id)
-                          ? "w-v-item w-v-body-cell editing-cell"
-                          : "w-v-item w-v-body-cell"
-                      }
-                    >
+                    <div className={cellClassName(col, item)}>
                       {col.render
                         ? col.render(item[col.dataKey], item)
                         : getValue(item, col.dataKey, "")}
