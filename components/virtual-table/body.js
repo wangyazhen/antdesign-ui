@@ -14,7 +14,10 @@ const Body = props => {
   const {
     columns,
     dataSource,
-    loading,
+    loading, // loading is element 通常是 antd 的 Spin 组件
+    loadingStyle = {}, // 提供设置 loading 样式
+    getPopupContainer, // 目前是loading 定位使用
+    emptyText = '',
     height,
     width,
     hasSelect,
@@ -110,14 +113,15 @@ const Body = props => {
   }
 
   // loading 距离左边的百分比
-  let percentL = 0.4;
+  let percentL = 5;
   try {
-    percentL = (document.getElementById("container").offsetWidth / tableWidth / 2) * 100;
-  } catch (error) {
-    console.log(error)
-  }
-  try {
-    percentL = (document.getElementsByTagName('body')[0].offsetWidth / tableWidth / 2) * 100;
+    let dom = null;
+    if (getPopupContainer && typeof getPopupContainer === 'function') {
+      dom = getPopupContainer();
+    } else {
+      dom = document.getElementById("container");
+    }
+    percentL = (dom.offsetWidth / tableWidth / 2) * 100;
   } catch (error) {
     console.log(error)
   }
@@ -192,15 +196,7 @@ const Body = props => {
             );
           }}
         />
-      ) : <div
-        style={{
-          height,
-          marginLeft: `${percentL}%`,
-          paddingTop: height / 2 - 50
-        }}
-      >
-
-      </div>}
+      ) : <div style={{ height }}>{emptyText}</div>}
       {loading &&
         <div
           style={{
@@ -211,7 +207,8 @@ const Body = props => {
             width: '100%',
             background: 'rgba(255,255,255,.6)',
             paddingLeft: `${percentL}%`,
-            paddingTop: height / 2 - 50
+            paddingTop: height / 2 - 50,
+            ...loadingStyle
           }}
         >
           {loading}

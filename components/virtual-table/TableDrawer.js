@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react'
-import {
-  Drawer, Switch,
-} from 'antd';
+
+import React from 'react'
+import { Drawer } from 'antd';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 
@@ -28,7 +27,7 @@ const reorder = (list, startIndex, endIndex) => {
 };
 
 export default function (props) {
-  const { columns, visible, onClose, onUpdate  } = props;
+  const { columns, visible, onClose, onUpdate } = props;
   const items = columns;
 
   const onDragEnd = (result) => {
@@ -52,7 +51,7 @@ export default function (props) {
     width={350}
     onClose={onClose}
     visible={visible}
-    bodyStyle={{padding: 0}}
+    bodyStyle={{ padding: 0 }}
   >
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId="droppable">

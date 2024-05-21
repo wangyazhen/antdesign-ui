@@ -1,5 +1,15 @@
 # 版本更新日志
 
+## v1.0.1
+
+- 解决 loading 定位问题
+- 提供 `loadingStyle`
+- 提供 `getPopupContainer`
+- 提供 `emptyText`
+
+这次重构发现 增加的 `TableDrawer` 功能依赖了 antd 的 `Drawer` 组件。
+功能越来越丰富 依赖也就多了起来
+
 ## v1.0.0
 
 - Virtual-table ellipsis 支持可配置

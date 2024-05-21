@@ -2,7 +2,7 @@
  * @Author: 王亚振
  * @Date: 2020-10-13 16:05:27
  * @LastEditors: 王亚振
- * @LastEditTime: 2024-05-20 17:41:15
+ * @LastEditTime: 2024-05-21 11:15:16
  * @FilePath: /antdesign-ui/README.md
 -->
 
@@ -11,6 +11,8 @@
 Rewrite an extjs project with antd.
 
 Some antd components have been extended, and there are also independent components that do not depend on antd.
+
+Encapsulates some frequently used `hooks`
 
 [更新日志](https://github.com/wangyazhen/antdesign-ui/blob/master/log.md)
 [中文文档](https://github.com/wangyazhen/antdesign-ui/blob/master/doc.md)

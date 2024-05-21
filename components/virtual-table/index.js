@@ -7,21 +7,14 @@ import { ASCIMG, ASC, DESCIMG, DESC, DEFAULTWIDTH, sortByLocal, noop } from "./u
 import { sorterDate, sorterNum, } from "../utils/helper"
 import usePrevious from '../hooks/usePrevious'
 
-/*
-*  optimize
-*  1. selectedRowKeys
-* */
 
 function WVTable(props, ref) {
-
   const {
     columns: propsColumns,
     dataSource: propsDataSource,
     selectedKeys,
     onSelectChange = (selectedRowKeys, selectedRow) => { },
     onResizeChange = (resizedColumn, resizedColumnMap) => { },
-    // sortKeys,
-    // onSortChange = (sortKey) => {},
     rowClassName = noop,
     onClickRow = noop,
     onDbClick = noop,
@@ -109,7 +102,6 @@ function WVTable(props, ref) {
   }, [selectedKeys])
 
 
-
   const sortDataSource = (sort, key, sortType, originData) => {
 
     const item = originData ? originData[0] : dataSource[0];
@@ -153,17 +145,15 @@ function WVTable(props, ref) {
 
 
   const colTitleClassName = col => {
-    let cls = 'w-v-item w-v-title'
+    let cls = 'w-v-item w-v-title ellipsis'
+
     if (sortKey[col.dataKey]) {
-      cls += ' w-v-title-sort '
+      cls += ' w-v-title-sort'
     }
-    // 标题 默认启用
-    // if (col.ellipsis !== false) {
-    // }
-    cls += ' ellipsis '
 
     return cls
   }
+
 
   const renderTitle = () => {
     return columns.map(col => {
@@ -183,7 +173,6 @@ function WVTable(props, ref) {
     })
   }
   const renderTableTitle = useMemo(() => renderTitle(), [width, sortKey, columns, dataSource])
-
 
 
   const tableWidth = _.values(width).reduce((p, n) => p + n, 0);
