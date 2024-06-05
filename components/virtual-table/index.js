@@ -6,6 +6,7 @@ import TableBody from "./body"
 import { ASCIMG, ASC, DESCIMG, DESC, DEFAULTWIDTH, sortByLocal, noop } from "./util"
 import { sorterDate, sorterNum, } from "../utils/helper"
 import usePrevious from '../hooks/usePrevious'
+import useMount from '../hooks/useMount'
 
 
 function WVTable(props, ref) {
@@ -22,6 +23,10 @@ function WVTable(props, ref) {
     allowRowSelect = false,
     // 单选模式
     singleMode = false,
+    // 多列排序模式， 禁用本地排序
+    mutiSortMode = false,
+    onSortChange = noop,
+    // end sort
     hasSelect = false,
     // 自定义 table drawer时设 false
     drawerSetting = true, // 默认启用设置按钮
@@ -74,7 +79,7 @@ function WVTable(props, ref) {
       setDataSource(propsDataSource)
     } else if (prevDataSource?.length !== 0) {
       // load sort
-      if (Object.keys(sortKey).length) {
+      if (Object.keys(sortKey).length && !mutiSortMode) {
         const key = Object.keys(sortKey)[0]
         sortDataSource(sortKey[key], key, null, propsDataSource)
       } else {
@@ -82,6 +87,20 @@ function WVTable(props, ref) {
       }
     }
   }, [propsDataSource])
+
+
+  useMount(() => {
+    try {
+      if (!mutiSortMode) return false;
+      const _sort = columns.reduce((prev, item) => { if (item.sortType) prev[item.dataKey] = (item.sortType); return prev }, {})
+
+      if (Object.keys(_sort).length) {
+        setSortKey(_sort)
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  })
 
   const [showDrawer, setShowDrawer] = useState(false)
 
@@ -103,9 +122,12 @@ function WVTable(props, ref) {
 
 
   const sortDataSource = (sort, key, sortType, originData) => {
-
-    const item = originData ? originData[0] : dataSource[0];
-    const sortArray = originData ? [...originData] : [...dataSource];
+    const item = originData[0];
+    const sortArray = [...originData];
+    if (!sort) {
+      setDataSource(propsDataSource)
+      return false;
+    }
     try {
       if (sortType) {
         switch (sortType) {
@@ -124,15 +146,22 @@ function WVTable(props, ref) {
       setDataSource(sortArray)
     } catch (e) {
       setDataSource(originData || dataSource)
-      console.log('handleSort has exception:', e)
+      console.log('sort has exception:', e)
     }
   }
   const handleSort = (event, key, col) => {
     if (event.target.nodeName === 'SPAN') return false;
-    const sort = sortKey[key] === ASC ? DESC : ASC;
-    sortDataSource(sort, key, col.sortType)
-    setSortKey({ [key]: sort })
-    // onSortChange({ [key]: sort })
+    const sort = !sortKey[key] ? ASC : sortKey[key] === ASC ? DESC : null;
+
+    let sortObj = { [key]: sort }
+    if (mutiSortMode) {
+      sortObj = { ...sortKey, [key]: sort }
+    } else {
+      // single
+      sortDataSource(sort, key, col.sortType, dataSource)
+    }
+    setSortKey(sortObj)
+    onSortChange(sortObj)
   }
 
   const handleAllCheck = (event) => {

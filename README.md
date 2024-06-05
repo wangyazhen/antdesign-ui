@@ -2,7 +2,7 @@
  * @Author: 王亚振
  * @Date: 2020-10-13 16:05:27
  * @LastEditors: 王亚振
- * @LastEditTime: 2024-05-21 11:15:16
+ * @LastEditTime: 2024-06-05 16:58:37
  * @FilePath: /antdesign-ui/README.md
 -->
 
@@ -22,6 +22,7 @@ Encapsulates some frequently used `hooks`
 VirtualTable :
 
 - column sort
+- column sort mutiple
 - column resize
 - column ellipsis // default is true
 - column resize callback
