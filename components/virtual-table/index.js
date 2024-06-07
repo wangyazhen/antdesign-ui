@@ -37,6 +37,7 @@ function WVTable(props, ref) {
   const [columns, setColumns] = useState(propsColumns)
   const [dataSource, setDataSource] = useState(propsDataSource)
   const [sortKey, setSortKey] = useState({})
+  const [sortOrder, setSortOrder] = useState([])
   const prevDataSource = usePrevious(propsDataSource)
 
   const [selectedAll, setSelectedAll] = useState(false)
@@ -153,15 +154,24 @@ function WVTable(props, ref) {
     if (event.target.nodeName === 'SPAN') return false;
     const sort = !sortKey[key] ? ASC : sortKey[key] === ASC ? DESC : null;
 
+    const newOrder = [...sortOrder]
     let sortObj = { [key]: sort }
     if (mutiSortMode) {
+      if (sort === null) {
+        newOrder = newOrder.filter(v => v !== key)
+      } else {
+        if (!newOrder.includes(key)) {
+          newOrder.push(key)
+        }
+      }
       sortObj = { ...sortKey, [key]: sort }
+      setSortOrder(newOrder)
     } else {
       // single
       sortDataSource(sort, key, col.sortType, dataSource)
     }
     setSortKey(sortObj)
-    onSortChange(sortObj)
+    onSortChange(sortObj, newOrder)
   }
 
   const handleAllCheck = (event) => {
