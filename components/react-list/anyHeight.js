@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Computer from './computer';
 import Row from './row';
-import { getScrollbarWidth } from '../utils/helper';
+// import { getScrollbarWidth } from '../utils/helper';
 
 export default class AnyHeight extends Component {
     constructor(props) {
@@ -87,21 +87,21 @@ export default class AnyHeight extends Component {
     }
 
     render() {
-        const { minRowHeight, height, style, rowStyle, rowRender } = this.props;
+        const { minRowHeight, height, style, rowStyle, rowRender, customScrollContainer } = this.props;
         const { beginIndex, endIndex, beforeHeight, afterHeight } = this.state;
 
         const wapperStyle = Object.assign({}, style, {
             height: `${height}px`,
             overflowY: 'scroll',
         });
-        try {
-            const scrollbarW = getScrollbarWidth();
-            if (scrollbarW > 0) {
-                wapperStyle.width = `calc(100% + ${scrollbarW}px)`;
-            }
-        } catch (error) {
-            console.warn(error)
-        }
+        // try {
+        //     const scrollbarW = getScrollbarWidth();
+        //     if (scrollbarW > 0) {
+        //         wapperStyle.width = `calc(100% + ${scrollbarW}px)`;
+        //     }
+        // } catch (error) {
+        //     console.warn(error)
+        // }
 
         const rowWapperStyle = Object.assign({}, rowStyle, {
             minHeight: `${minRowHeight}px`,
@@ -120,9 +120,19 @@ export default class AnyHeight extends Component {
             );
         }
 
+        let wapperProps = {
+            style: wapperStyle,
+            onScroll: this.handleScroll,
+        };
+        if (customScrollContainer) {
+            wapperProps = {
+                style: { height: `${height}px` },
+            };
+        }
+
         return (
             // eslint-disable-next-line no-return-assign
-            <div style={wapperStyle} onScroll={this.handleScroll} ref={ref => this.ref = ref}>
+            <div {...wapperProps} ref={ref => this.ref = ref}>
                 <div style={{ height: `${beforeHeight}px` }} />
                 {showData}
                 <div style={{ height: `${afterHeight}px` }} />

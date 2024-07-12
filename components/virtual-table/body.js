@@ -1,6 +1,6 @@
 import ReactList from "../react-list";
 import { TextButton } from "../Button";
-import React, { useState } from "react";
+import React, { useState, useRef, useImperativeHandle } from "react";
 import { noop, getValue, DEFAULTWIDTH } from "./util";
 
 const _editBtnStyle = {
@@ -59,6 +59,16 @@ const Body = props => {
     onSaveCancel();
   };
   // end double
+
+  const listRef = useRef(null);
+
+  useImperativeHandle(props.onRef, () => {
+    return {
+      handleScroll: (e) => {
+        listRef.current.handleScroll(e)
+      },
+    };
+  });
 
   const handleCheck = (event, itemId) => {
     const doNext = () => {
@@ -127,11 +137,13 @@ const Body = props => {
   }
 
   return (
-    <div className="w-v-tbody" style={{ position: 'relative' }}>
+    <div className="w-v-tbody" style={{ position: 'relative', width: tableWidth }}>
       {dataSource.length ? (
         <ReactList
           dataSource={dataSource}
           height={height}
+          ref={listRef}
+          customScrollContainer={true}
           minRowHeight={24}
           rowRender={(index, style) => {
             const item = dataSource[index];

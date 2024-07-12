@@ -4,7 +4,7 @@ import { Button, Icon } from "antd"
 import TableDrawer from "./TableDrawer"
 import TableBody from "./body"
 import { ASCIMG, ASC, DESCIMG, DESC, DEFAULTWIDTH, sortByLocal, noop } from "./util"
-import { sorterDate, sorterNum, } from "../utils/helper"
+import { sorterDate, sorterNum, moveParamToLast } from "../utils/helper"
 import usePrevious from '../hooks/usePrevious'
 import useMount from '../hooks/useMount'
 
@@ -154,7 +154,7 @@ function WVTable(props, ref) {
     if (event.target.nodeName === 'SPAN') return false;
     const sort = !sortKey[key] ? ASC : sortKey[key] === ASC ? DESC : null;
 
-    const newOrder = [...sortOrder]
+    let newOrder = [...sortOrder]
     let sortObj = { [key]: sort }
     if (mutiSortMode) {
       if (sort === null) {
@@ -162,6 +162,8 @@ function WVTable(props, ref) {
       } else {
         if (!newOrder.includes(key)) {
           newOrder.push(key)
+        } else {
+          newOrder = moveParamToLast(key, newOrder)
         }
       }
       sortObj = { ...sortKey, [key]: sort }
@@ -171,7 +173,7 @@ function WVTable(props, ref) {
       sortDataSource(sort, key, col.sortType, dataSource)
     }
     setSortKey(sortObj)
-    onSortChange(sortObj, newOrder)
+    onSortChange(sortObj, key, newOrder);
   }
 
   const handleAllCheck = (event) => {
@@ -220,16 +222,21 @@ function WVTable(props, ref) {
     width,
     columns,
     dataSource,
-    tableWidth,
+    tableWidth: drawerSetting ? tableWidth - 10 : tableWidth,
     selectedRowKeys,
     setSelectedRowKeys,
     setSelectedAll,
+    onRef: tableRef,
   };
 
+  const handleScroll = (e) => {
+    tableRef?.current?.handleScroll?.(e)
+  }
+
   return (
-    <div style={{ overflowX: "scroll" }}>
-      <div className="w-v-table" style={{ width: tableWidth }} ref={tableRef}>
-        <div className="w-v-thead flex">
+    <div>
+      <div className="w-v-table" style={{ overflow: 'auto' }} onScroll={handleScroll} ref={tableRef}>
+        <div className="w-v-thead flex" style={{ width: tableWidth }}>
           {hasSelect && (
             <div className="col-item-selection">
               <input

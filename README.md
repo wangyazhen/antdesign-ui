@@ -19,6 +19,8 @@ Encapsulates some frequently used `hooks`
 
 ## ✨ Features
 
+升级 table 滚动条
+
 VirtualTable :
 
 - column sort

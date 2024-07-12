@@ -156,3 +156,12 @@ export function getScrollbarWidth() {
   return widthNoScroll - widthWithScroll;
 }
 
+export function moveParamToLast(paramName, paramsArray) {
+  const index = paramsArray.indexOf(paramName);
+  if (index !== -1) {
+    paramsArray.splice(index, 1);
+    paramsArray.push(paramName);
+  }
+  return paramsArray;
+}
+
