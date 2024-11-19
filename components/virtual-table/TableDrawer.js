@@ -50,8 +50,8 @@ export default function (props) {
     placement="right"
     width={350}
     onClose={onClose}
-    visible={visible}
-    bodyStyle={{ padding: 0 }}
+    open={visible}
+    styles={{ body: { padding: 0 } }}
   >
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId="droppable">

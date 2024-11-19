@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef, useImperativeHandle, forwardRef } from "react"
 import { Resizable } from "react-resizable"
-import { Button, Icon } from "antd"
 import TableDrawer from "./TableDrawer"
 import TableBody from "./body"
 import { ASCIMG, ASC, DESCIMG, DESC, DEFAULTWIDTH, sortByLocal, noop } from "./util"
 import { sorterDate, sorterNum, moveParamToLast } from "../utils/helper"
 import usePrevious from '../hooks/usePrevious'
-import useMount from '../hooks/useMount'
+import useDidMount from '../hooks/useDidMount'
 
 
 function WVTable(props, ref) {
@@ -30,6 +29,10 @@ function WVTable(props, ref) {
     hasSelect = false,
     // 自定义 table drawer时设 false
     drawerSetting = true, // 默认启用设置按钮
+    drawerSettingElement = null, // 默认启用设置按钮元素
+    onFilterClick = noop,
+    filterIcon = null,
+    filterHightIcon = null,
   } = props;
 
   const tableRef = useRef(null)
@@ -37,6 +40,7 @@ function WVTable(props, ref) {
   const [columns, setColumns] = useState(propsColumns)
   const [dataSource, setDataSource] = useState(propsDataSource)
   const [sortKey, setSortKey] = useState({})
+  const [filterKey, setFilterKey] = useState('')//单列模式
   const [sortOrder, setSortOrder] = useState([])
   const prevDataSource = usePrevious(propsDataSource)
 
@@ -90,7 +94,7 @@ function WVTable(props, ref) {
   }, [propsDataSource])
 
 
-  useMount(() => {
+  useDidMount(() => {
     try {
       if (!mutiSortMode) return false;
       const _sort = columns.reduce((prev, item) => { if (item.sortType) prev[item.dataKey] = (item.sortType); return prev }, {})
@@ -151,7 +155,8 @@ function WVTable(props, ref) {
     }
   }
   const handleSort = (event, key, col) => {
-    if (event.target.nodeName === 'SPAN') return false;
+    const ignoreNodes = ['SPAN', 'SVG', 'PATH'];
+    if (ignoreNodes.includes(event.target.nodeName.toUpperCase())) return false;
     const sort = !sortKey[key] ? ASC : sortKey[key] === ASC ? DESC : null;
 
     let newOrder = [...sortOrder]
@@ -192,9 +197,17 @@ function WVTable(props, ref) {
       cls += ' w-v-title-sort'
     }
 
+    if (col.filter) {
+      cls += ' w-v-title-filter'
+    }
+
     return cls
   }
 
+  const handleFilterClick = (e, key) => {
+    onFilterClick(e, key)
+    setFilterKey(key)
+  }
 
   const renderTitle = () => {
     return columns.map(col => {
@@ -207,6 +220,9 @@ function WVTable(props, ref) {
             >
               {col.title}
               {sortKey[col.dataKey] === 'ASC' ? <img src={ASCIMG} /> : sortKey[col.dataKey] === 'DESC' ? <img src={DESCIMG} /> : null}
+              {col.filter && <span className="w-v-filter-icon" onClick={(e) => handleFilterClick(e, col.dataKey)}>
+                {filterKey === col.dataKey ? (filterHightIcon || filterIcon) : filterIcon}
+              </span>}
             </div>
           </Resizable>
         </div>
@@ -248,10 +264,8 @@ function WVTable(props, ref) {
           )}
           {renderTableTitle}
           {drawerSetting &&
-            <div className="col-item-operation">
-              <Button type="primary" size="small" onClick={() => setShowDrawer(true)}>
-                <Icon type="setting" />
-              </Button>
+            <div className="col-item-operation" onClick={() => setShowDrawer(true)}>
+              {drawerSettingElement}
             </div>
           }
         </div>
