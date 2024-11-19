@@ -11,7 +11,7 @@ export { default as Button } from "./Button";
 
 export { default as ReactList } from "./react-list";
 
-export { default as EditableTable } from "./editable-table";
+// export { default as EditableTable } from "./editable-table";
 
 export { default as ResizableTable } from "./resizable-table";
 
