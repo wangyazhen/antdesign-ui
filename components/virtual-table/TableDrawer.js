@@ -50,6 +50,7 @@ export default function (props) {
     placement="right"
     width={350}
     onClose={onClose}
+    visible={visible}
     open={visible}
     styles={{ body: { padding: 0 } }}
   >
