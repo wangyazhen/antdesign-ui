@@ -65,9 +65,7 @@ const Body = props => {
   useImperativeHandle(props.onRef, () => {
     return {
       handleScroll: (e) => {
-        if (listRef && listRef.current && listRef.current.handleScroll) {
-          listRef.current.handleScroll(e)
-        }
+        listRef?.current?.handleScroll?.(e)
       },
     };
   });

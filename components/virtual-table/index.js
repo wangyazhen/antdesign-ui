@@ -4,6 +4,7 @@ import TableDrawer from "./TableDrawer"
 import TableBody from "./body"
 import { ASCIMG, ASC, DESCIMG, DESC, DEFAULTWIDTH, sortByLocal, noop } from "./util"
 import { sorterDate, sorterNum, moveParamToLast } from "../utils/helper"
+import { SettingButton } from "../Button"
 import usePrevious from '../hooks/usePrevious'
 import useDidMount from '../hooks/useDidMount'
 
@@ -246,6 +247,7 @@ function WVTable(props, ref) {
   };
 
   const handleScroll = (e) => {
+    if (showDrawer) return false;
     tableRef?.current?.handleScroll?.(e)
   }
 
@@ -265,7 +267,7 @@ function WVTable(props, ref) {
           {renderTableTitle}
           {drawerSetting &&
             <div className="col-item-operation" onClick={() => setShowDrawer(true)}>
-              {drawerSettingElement}
+              {drawerSettingElement || <SettingButton />}
             </div>
           }
         </div>

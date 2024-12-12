@@ -76,3 +76,13 @@ import "antdesign-ui/lib/virtual-table/style.css"
 ```
 
 > **Continuously update new components**
+
+## 更新日志
+
+log.md 文件
+
+### v1.0.9
+
+- **修复滚动 bug**
+- 默认内置提供设置按钮 `SettingButton`
+- 支持覆盖设置按钮 `drawerSettingElement`

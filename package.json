@@ -1,6 +1,6 @@
 {
   "name": "antdesign-ui",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "升级antd 基于 antdesign 扩展更便捷的组件, 也有无依赖的组件。 基于替换ExtJs系统。 现代的EPR系统。 虚拟列表",
   "main": "lib/index.js",
   "scripts": {
