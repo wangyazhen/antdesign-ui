@@ -35,6 +35,7 @@ const Body = props => {
     setSelectedRowKeys,
     setSelectedAll,
     onCheckedBefore,
+    preventDefaultScroll,
     // db edit
     enableDoubleEdit = false,
     onSave = noop,
@@ -65,7 +66,9 @@ const Body = props => {
   useImperativeHandle(props.onRef, () => {
     return {
       handleScroll: (e) => {
-        listRef?.current?.handleScroll?.(e)
+        if (!preventDefaultScroll) {
+          listRef?.current?.handleScroll?.(e)
+        }
       },
     };
   });
@@ -143,7 +146,7 @@ const Body = props => {
           dataSource={dataSource}
           height={height}
           ref={listRef}
-          customScrollContainer={true}
+          customScrollContainer={!preventDefaultScroll}
           minRowHeight={24}
           rowRender={(index, style) => {
             const item = dataSource[index];

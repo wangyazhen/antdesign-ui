@@ -34,6 +34,8 @@ function WVTable(props, ref) {
     onFilterClick = noop,
     filterIcon = null,
     filterHightIcon = null,
+    plantform = 'erp', // web or erp 暂时只支持erp
+    preventDefaultScroll = false, // 防止滚动 默认不开启
   } = props;
 
   const tableRef = useRef(null)
@@ -247,41 +249,55 @@ function WVTable(props, ref) {
   };
 
   const handleScroll = (e) => {
-    if (showDrawer) return false;
+    if (showDrawer || preventDefaultScroll) return false;
     tableRef?.current?.handleScroll?.(e)
+  }
+
+  const tableContentElement = (<>
+    <div className="w-v-thead flex" style={{ width: tableWidth }}>
+      {hasSelect && (
+        <div className="col-item-selection">
+          <input
+            type="checkbox"
+            checked={selectedAll}
+            onChange={handleAllCheck}
+          />
+        </div>
+      )}
+      {renderTableTitle}
+      {drawerSetting &&
+        <div className="col-item-operation" onClick={() => setShowDrawer(true)}>
+          {drawerSettingElement || <SettingButton />}
+        </div>
+      }
+    </div>
+
+    <TableBody {...bodyProps} />
+
+    {columns && columns.length ? (
+      <TableDrawer
+        visible={showDrawer}
+        columns={columns}
+        onUpdate={onTableColumnsUpdate}
+        onClose={() => setShowDrawer(false)}
+      />
+    ) : null}
+  </>)
+
+  if (preventDefaultScroll) {
+    return (
+      <div>
+        <div className="w-v-table" style={{ overflow: 'auto' }} ref={tableRef}>
+          {tableContentElement}
+        </div>
+      </div>
+    );
   }
 
   return (
     <div>
       <div className="w-v-table" style={{ overflow: 'auto' }} onScroll={handleScroll} ref={tableRef}>
-        <div className="w-v-thead flex" style={{ width: tableWidth }}>
-          {hasSelect && (
-            <div className="col-item-selection">
-              <input
-                type="checkbox"
-                checked={selectedAll}
-                onChange={handleAllCheck}
-              />
-            </div>
-          )}
-          {renderTableTitle}
-          {drawerSetting &&
-            <div className="col-item-operation" onClick={() => setShowDrawer(true)}>
-              {drawerSettingElement || <SettingButton />}
-            </div>
-          }
-        </div>
-
-        <TableBody {...bodyProps} />
-
-        {columns && columns.length ? (
-          <TableDrawer
-            visible={showDrawer}
-            columns={columns}
-            onUpdate={onTableColumnsUpdate}
-            onClose={() => setShowDrawer(false)}
-          />
-        ) : null}
+        {tableContentElement}
       </div>
     </div>
   );
