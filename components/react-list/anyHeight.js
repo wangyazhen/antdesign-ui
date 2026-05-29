@@ -19,8 +19,10 @@ export default class AnyHeight extends Component {
         this.handleScroll = this.handleScroll.bind(this);
         this.updateRowHeight = this.updateRowHeight.bind(this);
         this.manageScrollTimeOut = this.manageScrollTimeOut.bind(this);
+        this.syncDisplayData = this.syncDisplayData.bind(this);
 
         this.lastScrollTop = 0;
+        this.syncFrame = null;
     }
 
     componentDidMount() {
@@ -44,6 +46,17 @@ export default class AnyHeight extends Component {
             const { beginIndex, endIndex } = this.state;
             this.ref.scrollTop = this.lastScrollTop;
             this.computer.updateRowHeightAfterScroll(beginIndex, endIndex);
+            this.syncDisplayData();
+        }
+    }
+
+    componentWillUnmount() {
+        if (this.state.scrollTimeout) {
+            clearTimeout(this.state.scrollTimeout);
+        }
+        if (this.syncFrame) {
+            cancelAnimationFrame(this.syncFrame);
+            this.syncFrame = null;
         }
     }
 
@@ -64,7 +77,32 @@ export default class AnyHeight extends Component {
     }
 
     updateRowHeight(index, height) {
+        const row = this.computer.rowData[index];
+        if (!row || row.height === height) return;
         this.computer.cacheRowHeight(index, height);
+        this.syncDisplayData();
+    }
+
+    syncDisplayData() {
+        if (this.syncFrame) return;
+        this.syncFrame = requestAnimationFrame(() => {
+            this.syncFrame = null;
+            const nextState = this.computer.getDisplayData(
+                this.lastScrollTop,
+                this.props.preloadBatchSize,
+                this.state.beginIndex,
+                this.state.beforeHeight,
+            );
+
+            if (
+                nextState.beginIndex !== this.state.beginIndex
+                || nextState.endIndex !== this.state.endIndex
+                || nextState.beforeHeight !== this.state.beforeHeight
+                || nextState.afterHeight !== this.state.afterHeight
+            ) {
+                this.setState(nextState);
+            }
+        });
     }
 
     manageScrollTimeOut() {

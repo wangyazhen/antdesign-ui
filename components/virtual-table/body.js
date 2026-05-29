@@ -1,4 +1,3 @@
-import ReactList from "../react-list";
 import { TextButton } from "../Button";
 import React, { useState, useRef, useImperativeHandle } from "react";
 import { noop, getValue, DEFAULTWIDTH } from "./util";
@@ -8,6 +7,8 @@ const _editBtnStyle = {
   width: 75,
   textAlign: "center"
 };
+const ROW_HEIGHT = 24;
+const PRELOAD_COUNT = 8;
 let _count = 0;
 
 const Body = props => {
@@ -43,6 +44,10 @@ const Body = props => {
   } = props;
 
   const [selected, setSelected] = useState(0);
+  const [scrollTop, setScrollTop] = useState(0);
+  const lastContainerScrollTopRef = useRef(0);
+  const lastBodyScrollTopRef = useRef(0);
+  const restoringScrollRef = useRef(false);
   const clickRow = row => {
     if (!hasSelect) setSelected(row.id);
     onClickRow(row);
@@ -50,7 +55,13 @@ const Body = props => {
 
   // start double
   const [doubleId, setDoubleId] = useState(0);
-  const onDoubleClickRow = row => {
+  const onDoubleClickRow = (row) => {
+    const scrollContainer = bodyRef.current?.parentElement;
+    const bodyOffsetTop = bodyRef.current?.offsetTop || 0;
+    if (scrollContainer) {
+      lastContainerScrollTopRef.current = scrollContainer.scrollTop || 0;
+      lastBodyScrollTopRef.current = Math.max(0, lastContainerScrollTopRef.current - bodyOffsetTop);
+    }
     if (enableDoubleEdit) setDoubleId(row.id);
     onDbClick(row);
   };
@@ -61,14 +72,37 @@ const Body = props => {
   };
   // end double
 
-  const listRef = useRef(null);
+  const bodyRef = useRef(null);
 
   useImperativeHandle(props.onRef, () => {
     return {
       handleScroll: (e) => {
-        if (!preventDefaultScroll) {
-          listRef?.current?.handleScroll?.(e)
+        if (restoringScrollRef.current) {
+          return;
         }
+        const containerScrollTop = e?.target?.scrollTop || 0;
+        const bodyOffsetTop = bodyRef.current?.offsetTop || 0;
+        const nextScrollTop = Math.max(0, containerScrollTop - bodyOffsetTop);
+        const rowIndex = doubleId ? dataSource.findIndex(item => item.id === doubleId) : -1;
+        const jumpedToTopWhileEditing = doubleId
+          && containerScrollTop === 0
+          && lastContainerScrollTopRef.current > bodyOffsetTop
+          && rowIndex > Math.ceil(height / ROW_HEIGHT);
+
+        if (jumpedToTopWhileEditing && e?.target) {
+          restoringScrollRef.current = true;
+          e.target.scrollTop = lastContainerScrollTopRef.current;
+          setScrollTop(lastBodyScrollTopRef.current);
+          requestAnimationFrame(() => {
+            restoringScrollRef.current = false;
+          });
+          return;
+        }
+        if (containerScrollTop > 0) {
+          lastContainerScrollTopRef.current = containerScrollTop;
+          lastBodyScrollTopRef.current = nextScrollTop;
+        }
+        setScrollTop(nextScrollTop);
       },
     };
   });
@@ -96,7 +130,7 @@ const Body = props => {
     }
   };
 
-  const handleClickRow = (item) => {
+  const handleClickRow = (item, rowElement) => {
     _count += 1;
     setTimeout(() => {
       if (_count === 1) {
@@ -105,7 +139,7 @@ const Body = props => {
           handleCheck(undefined, item.id);
         }
       } else if (_count === 2) {
-        onDoubleClickRow(item);
+        onDoubleClickRow(item, rowElement);
       }
       _count = 0;
     }, 300);
@@ -139,78 +173,86 @@ const Body = props => {
     console.log(error)
   }
 
-  return (
-    <div className="w-v-tbody" style={{ position: 'relative', width: tableWidth }}>
-      {dataSource.length ? (
-        <ReactList
-          dataSource={dataSource}
-          height={height}
-          ref={listRef}
-          customScrollContainer={!preventDefaultScroll}
-          minRowHeight={24}
-          rowRender={(index, style) => {
-            const item = dataSource[index];
-            const checked = selectedRowKeys.includes(item.id);
-            const _rowClassName = () => {
-              const editCls = isEditing(item.id) ? "editing-row" : "";
-              const extraCls = typeof rowClassName === 'function' ? rowClassName(item) : rowClassName;
-              let clsName = `w-v-row flex ${editCls} ${extraCls || ''}`;
-              let selectedClsName = clsName + " selected";
-              if (hasSelect) {
-                return checked ? selectedClsName : clsName;
-              }
-              return selected === item.id ? selectedClsName : clsName;
-            };
+  const renderRow = (item, index) => {
+    const checked = selectedRowKeys.includes(item.id);
+    const _rowClassName = () => {
+      const editCls = isEditing(item.id) ? "editing-row" : "";
+      const extraCls = typeof rowClassName === 'function' ? rowClassName(item) : rowClassName;
+      let clsName = `w-v-row flex ${editCls} ${extraCls || ''}`;
+      let selectedClsName = clsName + " selected";
+      if (hasSelect) {
+        return checked ? selectedClsName : clsName;
+      }
+      return selected === item.id ? selectedClsName : clsName;
+    };
 
-            return (
-              <div className={_rowClassName()} onClick={() => handleClickRow(item)} >
-                {hasSelect && (
-                  <div className="col-item-selection">
-                    <input
-                      type="checkbox"
-                      checked={checked}
-                      onChange={v => handleCheck(v, item.id)}
-                    />
-                  </div>
-                )}
-                {columns.map(col => (
-                  <div
-                    key={col.dataKey}
-                    className="col-item"
-                    style={{ width: width[col.dataKey] || DEFAULTWIDTH }}
-                  >
-                    <div className={cellClassName(col, item)}>
-                      {col.render
-                        ? col.render(item[col.dataKey], item)
-                        : getValue(item, col.dataKey, "")}
-                    </div>
-                  </div>
-                ))}
-                {enableDoubleEdit && isEditing(item.id) && (
-                  <div>
-                    <div
-                      className="et-editable-table-edit-button"
-                      style={{ marginTop: 28 }}
-                    >
-                      <TextButton
-                        text="Save"
-                        style={_editBtnStyle}
-                        onClick={() => {
-                          if (onSave()) onCancel();
-                        }}
-                      />
-                      <TextButton
-                        text="Cancel"
-                        style={{ marginLeft: 6, ..._editBtnStyle }}
-                        onClick={onCancel}
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          }}
-        />
+    return (
+      <div
+        key={item.id || index}
+        data-row-key={item.id}
+        className={_rowClassName()}
+        onClick={(e) => handleClickRow(item, e.currentTarget)}
+      >
+        {hasSelect && (
+          <div className="col-item-selection">
+            <input
+              type="checkbox"
+              checked={checked}
+              onChange={v => handleCheck(v, item.id)}
+            />
+          </div>
+        )}
+        {columns.map(col => (
+          <div
+            key={col.dataKey}
+            className="col-item"
+            style={{ width: width[col.dataKey] || DEFAULTWIDTH }}
+          >
+            <div className={cellClassName(col, item)}>
+              {col.render
+                ? col.render(item[col.dataKey], item)
+                : getValue(item, col.dataKey, "")}
+            </div>
+          </div>
+        ))}
+        {enableDoubleEdit && isEditing(item.id) && (
+          <div className="et-editable-table-edit-button">
+            <TextButton
+              text="Save"
+              style={_editBtnStyle}
+              onClick={() => {
+                if (onSave()) onCancel();
+              }}
+            />
+            <TextButton
+              text="Cancel"
+              style={{ marginLeft: 6, ..._editBtnStyle }}
+              onClick={onCancel}
+            />
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const totalCount = dataSource.length;
+  const totalHeight = totalCount * ROW_HEIGHT;
+  const safeScrollTop = Math.max(0, Math.min(scrollTop, Math.max(0, totalHeight - height)));
+  const visibleCount = Math.ceil(height / ROW_HEIGHT) + PRELOAD_COUNT * 2 + 1;
+  const beginIndex = Math.max(0, Math.floor(safeScrollTop / ROW_HEIGHT) - PRELOAD_COUNT);
+  const endIndex = Math.min(totalCount - 1, beginIndex + visibleCount - 1);
+  const beforeHeight = beginIndex * ROW_HEIGHT;
+  const afterHeight = Math.max(0, totalHeight - (endIndex + 1) * ROW_HEIGHT);
+  const visibleRows = totalCount ? dataSource.slice(beginIndex, endIndex + 1) : [];
+
+  return (
+    <div ref={bodyRef} className="w-v-tbody" style={{ position: 'relative', width: tableWidth }}>
+      {dataSource.length ? (
+        <div style={{ height }}>
+          <div style={{ height: beforeHeight }} />
+          {visibleRows.map((item, offsetIndex) => renderRow(item, beginIndex + offsetIndex))}
+          <div style={{ height: afterHeight }} />
+        </div>
       ) : <div style={{ height }}>{emptyText}</div>}
       {loading &&
         <div

@@ -16,9 +16,27 @@
 .w-v-table .col-item-selection {width: 24px;text-align: center;padding-top: 5px;border-bottom: 1px solid #ccc;}
 .w-v-table .w-v-title-sort {background-color: #eff6fb}
 .w-v-table .col-item {overflow: hidden}
-.w-v-row .w-v-body-cell.editing-cell {height: 30px;padding: 2px 3px 1px}
-.editing-row {position:relative;background-color: #e0ebf3;}
-.w-v-row.editing-row .w-v-body-cell{line-height: 25px;}
+.w-v-row .col-item,
+.w-v-row .col-item-selection,
+.w-v-row .col-item-operation {flex: 0 0 auto}
+.w-v-row .col-item,
+.w-v-row .w-v-body-cell,
+.w-v-row .w-v-body-cell.editing-cell {min-width: 0; box-sizing: border-box}
+.w-v-row .w-v-body-cell.editing-cell {height: 24px;padding: 1px 3px 0;line-height: 22px;overflow: visible}
+.editing-row {position:relative;background-color: #e0ebf3;z-index: 1}
+.editing-row .col-item,
+.editing-row .col-item-selection {overflow: visible}
+.w-v-row.editing-row .w-v-body-cell{line-height: 15px;}
+.w-v-row .w-v-body-cell.editing-cell > * {width: 100%; max-width: 100%; min-width: 0}
+.w-v-row .w-v-body-cell.editing-cell .ant-input,
+.w-v-row .w-v-body-cell.editing-cell .ant-input-affix-wrapper,
+.w-v-row .w-v-body-cell.editing-cell .ant-select,
+.w-v-row .w-v-body-cell.editing-cell .ant-input,
+.w-v-row .w-v-body-cell.editing-cell .ant-select-selection--single {width: 100%; max-width: 100%; min-width: 0; height: 22px}
+.w-v-row .w-v-body-cell.editing-cell .ant-select-selection__rendered {line-height: 20px}
+.w-v-row .w-v-body-cell.editing-cell .ant-select-selection--single .ant-select-selection__arrow {line-height: 20px}
+.w-v-row .w-v-body-cell.editing-cell input {min-width: 0}
+.w-v-row .et-editable-table-edit-button {position: absolute;left: 50%;top: 24px;transform: translateX(-50%);margin-top: 0;padding: 4px 10px 8px;background-color: #e0ebf3;z-index: 2;white-space: nowrap}
 
 /* 右侧展开 */
 .dragIcon {

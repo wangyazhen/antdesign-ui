@@ -21,26 +21,20 @@ export default class Computer {
     }
 
     cacheRowHeight(index, height) {
-        this.rowData[index].delayHeight = height - this.rowData[index].height;
+        if (!this.rowData[index]) return;
         this.rowData[index].height = height;
     }
 
     updateRowHeightAfterScroll(beginIndex, endIndex) {
-        for (let i = beginIndex; i < this.rowData.length; i += 1) {
-            if (i <= endIndex) {
-                if (i === beginIndex) {
-                    this.rowData[i].delayOffset = this.rowData[i].delayHeight;
-                } else {
-                    this.rowData[i].offset += this.rowData[i - 1].delayOffset;
-                    this.rowData[i].delayOffset =
-                        this.rowData[i].delayHeight + this.rowData[i - 1].delayOffset;
-                }
-            } else if (i > 0 && this.rowData[i - 1].delayOffset === 0) {
-                i = this.rowData.length;
+        if (!this.rowData.length) return;
+        for (let i = 0; i < this.rowData.length; i += 1) {
+            if (i === 0) {
+                this.rowData[i].offset = 0;
             } else {
-                this.rowData[i].delayOffset = this.rowData[i - 1].delayOffset;
-                this.rowData[i].offset += this.rowData[i].delayOffset;
+                this.rowData[i].offset = this.rowData[i - 1].offset + this.rowData[i - 1].height;
             }
+            this.rowData[i].delayHeight = 0;
+            this.rowData[i].delayOffset = 0;
         }
     }
 
@@ -65,11 +59,22 @@ export default class Computer {
         const beginIndex = this.getBeginIndex(scrollTop, preloadBatchSize);
         const endIndex = this.getEndIndex(scrollTop, preloadBatchSize);
 
-        const beforeHeight = beginIndex === lastBeginIndex ?
-            lastBeforeHeight : this.rowData[beginIndex].offset;
-        const afterHeight = this.rowData[this.length - 1].offset
-            - (this.rowData[endIndex].offset - this.rowData[beginIndex].offset)
-            - beforeHeight;
+        if (!this.rowData.length) {
+            return {
+                beginIndex: 0,
+                endIndex: 0,
+                beforeHeight: 0,
+                afterHeight: 0,
+            };
+        }
+
+        const beforeHeight = this.rowData[beginIndex].offset;
+        const last = this.rowData[this.length - 1];
+        const totalHeight = last.offset + last.height;
+        const endBottom = this.rowData[endIndex].offset + this.rowData[endIndex].height;
+        const visibleHeight = endBottom - beforeHeight;
+        let afterHeight = totalHeight - visibleHeight - beforeHeight;
+        if (afterHeight < 0) afterHeight = 0;
         return {
             beginIndex,
             endIndex,
